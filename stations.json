@@ -1,0 +1,5 @@
+[
+  {"station": "Bhopal", "arrival": "10:00", "boarding": 100, "deboarding": 0},
+  {"station": "Vidisha", "arrival": "11:00", "boarding": 50, "deboarding": 20},
+  {"station": "Jhansi", "arrival": "14:00", "boarding": 200, "deboarding": 50}
+]

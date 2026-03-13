@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>RailSense AI | Master Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --text: #f8fafc;
+        --accent: #3b82f6;
+        --danger: #ef4444;
+        --success: #22c55e;
+        --warning: #f59e0b;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .sidebar {
+        width: 320px;
+        background: var(--card);
+        padding: 20px;
+        border-right: 1px solid #334155;
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      .main-content {
+        flex: 1;
+        padding: 25px;
+        overflow-y: auto;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+      .stat-card {
+        background: var(--card);
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #334155;
+      }
+      .big-num {
+        font-size: 48px;
+        font-weight: 800;
+        margin: 5px 0;
+      }
+      .hazard {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: bold;
+        display: none;
+        border: 2px solid white;
+        animation: pulse 2s infinite;
+      }
+      .btn {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: 0.3s;
+      }
+      input {
+        width: 92%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 8px;
+        background: #0f172a;
+        color: white;
+        border: 1px solid #334155;
+        margin-bottom: 10px;
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.8;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2 style="color: var(--accent); margin-top: 0">🚄 RailSense AI</h2>
+
+      <label style="font-size: 11px; color: #94a3b8">STATION ANALYTICS</label>
+      <input
+        type="text"
+        id="stInput"
+        placeholder="Enter Station Name (e.g. Bhopal)"
+      />
+      <input type="date" id="dtInput" style="color-scheme: dark" />
+      <button
+        class="btn"
+        style="background: var(--accent); color: white"
+        onclick="checkPrediction()"
+      >
+        Analyze Station
+      </button>
+
+      <div
+        id="predResult"
+        style="
+          margin-top: 15px;
+          display: none;
+          padding: 12px;
+          background: #334155;
+          border-radius: 8px;
+          font-size: 13px;
+          border-left: 4px solid var(--accent);
+        "
+      ></div>
+
+      <hr style="border: 0.5px solid #334155; margin: 20px 0" />
+
+      <label style="font-size: 11px; color: #94a3b8">FINES & REPORTS</label>
+      <button
+        class="btn"
+        style="background: var(--danger); color: white"
+        onclick="generateFine()"
+      >
+        Generate Fine (₹500)
+      </button>
+      <button
+        class="btn"
+        style="background: #0ea5e9; color: white"
+        onclick="downloadReport()"
+      >
+        📥 Download Station Report
+      </button>
+      <button
+        class="btn"
+        style="background: #64748b; color: white"
+        onclick="resetAll()"
+      >
+        End Station & Reset
+      </button>
+    </div>
+
+    <div class="main-content">
+      <div
+        id="revenueAlert"
+        class="hazard"
+        style="background: var(--danger)"
+      ></div>
+
+      <div class="grid">
+        <div class="stat-card" style="border-top: 5px solid var(--danger)">
+          <span
+            style="
+              color: var(--danger);
+              font-size: 11px;
+              font-weight: bold;
+              text-transform: uppercase;
+            "
+            >Security Monitor</span
+          >
+          <div
+            id="secAlertBox"
+            style="
+              font-size: 20px;
+              font-weight: bold;
+              margin-top: 10px;
+              color: var(--danger);
+            "
+          >
+            NORMAL
+          </div>
+        </div>
+
+        <div class="stat-card" style="border-top: 5px solid var(--warning)">
+          <span
+            style="
+              color: var(--warning);
+              font-size: 11px;
+              font-weight: bold;
+              text-transform: uppercase;
+            "
+            >Operations</span
+          >
+          <div
+            id="opAlertBox"
+            style="
+              font-size: 20px;
+              font-weight: bold;
+              margin-top: 10px;
+              color: var(--warning);
+            "
+          >
+            STABLE
+          </div>
+        </div>
+
+        <div class="stat-card" style="grid-column: span 2">
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            "
+          >
+            <div>
+              <span
+                style="
+                  color: var(--success);
+                  font-size: 11px;
+                  font-weight: bold;
+                  text-transform: uppercase;
+                "
+                >Revenue Protection</span
+              >
+              <div
+                id="ticketlessCount"
+                class="big-num"
+                style="color: var(--danger)"
+              >
+                0
+              </div>
+            </div>
+            <button
+              class="btn"
+              style="
+                width: auto;
+                padding: 15px 35px;
+                background: var(--success);
+                color: white;
+                border-radius: 10px;
+                font-size: 16px;
+              "
+              onclick="verifyTicket()"
+            >
+              Verify Passenger
+            </button>
+          </div>
+          <div style="font-size: 14px; color: #94a3b8">
+            Total Fine:
+            <b style="color: white">₹<span id="fineTotal">0</span></b> |
+            Verified: <b style="color: white"><span id="vCount">0</span></b> |
+            Current Count:
+            <b style="color: white"><span id="countDisplay">0</span></b>
+          </div>
+        </div>
+
+        <div class="stat-card" style="grid-column: span 2">
+          <span
+            style="
+              color: var(--accent);
+              font-size: 11px;
+              font-weight: bold;
+              text-transform: uppercase;
+            "
+            >Occupancy Trend</span
+          >
+          <div style="height: 220px; margin-top: 15px">
+            <canvas id="chart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const IP = "10.14.58.199";
+
+      function update() {
+        fetch(`http://${IP}:8080/get_status`)
+          .then((r) => r.json())
+          .then((d) => {
+            document.getElementById("ticketlessCount").innerText =
+              d.ticketless_count;
+            document.getElementById("vCount").innerText = d.verified_count;
+            document.getElementById("fineTotal").innerText = d.total_fine;
+            document.getElementById("countDisplay").innerText = d.count;
+
+            const revBox = document.getElementById("revenueAlert");
+            if (d.ticketless_count > 0) {
+              revBox.innerText = `🚨 REVENUE LOSS: ${d.ticketless_count} TICKETLESS PERSONS DETECTED!`;
+              revBox.style.display = "block";
+            } else {
+              revBox.style.display = "none";
+            }
+
+            document.getElementById("secAlertBox").innerText =
+              d.security_alert === "NORMAL"
+                ? "✅ SYSTEM SECURE"
+                : "🚨 " + d.security_alert;
+            document.getElementById("opAlertBox").innerText =
+              d.op_alert === "NORMAL"
+                ? "✅ OPERATIONS STABLE"
+                : "⚠️ " + d.op_alert;
+
+            const now = new Date().toLocaleTimeString();
+            chart.data.labels.push(now);
+            chart.data.datasets[0].data.push(d.count);
+            if (chart.data.labels.length > 10) {
+              chart.data.labels.shift();
+              chart.data.datasets[0].data.shift();
+            }
+            chart.update();
+          })
+          .catch((e) => console.log("Offline"));
+      }
+
+      async function checkPrediction() {
+        const s = document.getElementById("stInput").value;
+        if (!s) return alert("Enter Station Name");
+        const res = await fetch(`http://${IP}:8080/get_station_data?name=${s}`);
+        const data = await res.json();
+        const resDiv = document.getElementById("predResult");
+        resDiv.style.display = "block";
+        resDiv.innerHTML = `<b>Station:</b> ${data.station}<br><b>Expected Crowd:</b> ${data.expected_count} persons`;
+      }
+
+      function verifyTicket() {
+        fetch(`http://${IP}:8080/verify_ticket`, { method: "POST" }).then(() =>
+          update(),
+        );
+      }
+      function generateFine() {
+        fetch(`http://${IP}:8080/generate_fine`, { method: "POST" }).then(() =>
+          update(),
+        );
+      }
+      function resetAll() {
+        if (confirm("End Station & Reset Data?"))
+          fetch(`http://${IP}:8080/reset_all`, { method: "POST" }).then(() =>
+            update(),
+          );
+      }
+
+      function downloadReport() {
+        const station = document.getElementById("stInput").value || "Unknown";
+        const date =
+          document.getElementById("dtInput").value ||
+          new Date().toLocaleDateString();
+        const content = `RAILSENSE STATION REPORT\nStation: ${station}\nDate: ${date}\nVerified: ${document.getElementById("vCount").innerText}\nTicketless: ${document.getElementById("ticketlessCount").innerText}\nFines: ₹${document.getElementById("fineTotal").innerText}`;
+        const blob = new Blob([content], { type: "text/plain" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `Report_${station}_${date}.txt`;
+        a.click();
+      }
+
+      setInterval(update, 3000);
+      const ctx = document.getElementById("chart").getContext("2d");
+      const chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "Coach Occupancy",
+              data: [],
+              borderColor: "#3b82f6",
+              backgroundColor: "rgba(59, 130, 246, 0.1)",
+              fill: true,
+              tension: 0.4,
+            },
+          ],
+        },
+        options: {
+          maintainAspectRatio: false,
+          responsive: true,
+          animation: false,
+          scales: {
+            y: { beginAtZero: true, grid: { color: "#334155" } },
+            x: { grid: { color: "#334155" } },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>

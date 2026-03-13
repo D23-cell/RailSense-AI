@@ -1,0 +1,8 @@
+{
+  "station_code": "KOTA",
+  "station_name": "Kota Junction",
+  "location": {"lat": 25.21, "long": 75.86},
+  "primary_tag": "EDUCATION",
+  "secondary_tag": "TRANSIT",
+  "popularity_score": 8.5
+}
