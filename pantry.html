@@ -73,6 +73,22 @@
     </style>
   </head>
   <body>
+    <button
+      onclick="window.location.href = '/'"
+      style="
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        background: #1e293b;
+        color: white;
+        border-radius: 8px;
+        border: 1px solid #334155;
+        cursor: pointer;
+      "
+    >
+      ⬅ Back to Dashboard
+    </button>
     <h1 style="color: var(--accent)">🍱 RailSense Pantry Optimizer</h1>
     <p style="color: #94a3b8">Real-time Food Demand based on Coach Occupancy</p>
 
@@ -101,33 +117,37 @@
     </div>
 
     <script>
-const API_BASE_URL = "https://railsense-ai.onrender.com";
+      const API_BASE_URL = "https://railsense-ai.onrender.com";
 
-function refreshPantry() {
-  fetch(`${API_BASE_URL}/pantry_demand`) 
-    .then((res) => res.json())
-    .then((data) => {
-      document.getElementById("occVal").innerText = data.current_occupancy;
-      document.getElementById("mealVal").innerText = data.meals_needed;
-      document.getElementById("waterVal").innerText = data.water_bottles;
+      function refreshPantry() {
+        fetch(`${API_BASE_URL}/pantry_demand`)
+          .then((res) => res.json())
+          .then((data) => {
+            document.getElementById("occVal").innerText =
+              data.current_occupancy;
+            document.getElementById("mealVal").innerText = data.meals_needed;
+            document.getElementById("waterVal").innerText = data.water_bottles;
 
-      const banner = document.getElementById("statusBanner");
-      if (data.pantry_status === "URGENT PREP") {
-        banner.innerText = "🚨 ALERT: HIGH DEMAND - START PREPARING EXTRA MEALS";
-        banner.className = "status-banner urgent";
-      } else {
-        banner.innerText = "✅ NORMAL DEMAND: OPTIMIZING WASTE";
-        banner.className = "status-banner normal";
+            const banner = document.getElementById("statusBanner");
+            if (data.pantry_status === "URGENT PREP") {
+              banner.innerText =
+                "🚨 ALERT: HIGH DEMAND - START PREPARING EXTRA MEALS";
+              banner.className = "status-banner urgent";
+            } else {
+              banner.innerText = "✅ NORMAL DEMAND: OPTIMIZING WASTE";
+              banner.className = "status-banner normal";
+            }
+          })
+          .catch((err) => {
+            console.log("Server Offline...");
+            document.getElementById("statusBanner").innerText =
+              "⚠️ SERVER OFFLINE - CHECK BACKEND";
+            document.getElementById("statusBanner").className =
+              "status-banner urgent";
+          });
       }
-    })
-    .catch((err) => {
-      console.log("Server Offline...");
-      document.getElementById("statusBanner").innerText = "⚠️ SERVER OFFLINE - CHECK BACKEND";
-      document.getElementById("statusBanner").className = "status-banner urgent";
-    });
-}
       setInterval(refreshPantry, 3000);
-      refreshPantry(); 
+      refreshPantry();
     </script>
   </body>
 </html>

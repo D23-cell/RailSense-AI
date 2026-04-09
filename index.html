@@ -94,6 +94,16 @@
     <div class="sidebar">
       <h2 style="color: var(--accent); margin-top: 0">🚄 RailSense AI</h2>
 
+      <label style="font-size: 11px; color: #94a3b8">NAVIGATION</label>
+      <button
+        class="btn"
+        style="background: #1e293b; color: white; border: 1px solid #334155"
+        onclick="window.location.href = '/pantry'"
+      >
+        🍱 Switch to Pantry Hub
+      </button>
+      <hr style="border: 0.5px solid #334155; margin: 15px 0" />
+
       <label style="font-size: 11px; color: #94a3b8">STATION ANALYTICS</label>
       <input
         type="text"
@@ -270,10 +280,10 @@
     </div>
 
     <script>
-const API_BASE_URL = "https://railsense-ai.onrender.com";
-function update() {
-fetch(`${API_BASE_URL}/get_status`)
-  .then((r) => r.json())
+      const API_BASE_URL = "https://railsense-ai.onrender.com";
+      function update() {
+        fetch(`${API_BASE_URL}/get_status`)
+          .then((r) => r.json())
           .then((d) => {
             document.getElementById("ticketlessCount").innerText =
               d.ticketless_count;
@@ -311,29 +321,35 @@ fetch(`${API_BASE_URL}/get_status`)
       }
 
       async function checkPrediction() {
-  const s = document.getElementById("stInput").value;
-  if (!s) return alert("Enter Station Name");
+        const s = document.getElementById("stInput").value;
+        if (!s) return alert("Enter Station Name");
 
-  const res = await fetch(`${API_BASE_URL}/get_station_data?name=${s}`);
-  const data = await res.json();
-  
-  const resDiv = document.getElementById("predResult");
-  resDiv.style.display = "block";
-  resDiv.innerHTML = `<b>Station:</b> ${data.station}<br><b>Expected Crowd:</b> ${data.expected_count} persons`;
-}
+        const res = await fetch(`${API_BASE_URL}/get_station_data?name=${s}`);
+        const data = await res.json();
+
+        const resDiv = document.getElementById("predResult");
+        resDiv.style.display = "block";
+        resDiv.innerHTML = `<b>Station:</b> ${data.station}<br><b>Expected Crowd:</b> ${data.expected_count} persons`;
+      }
 
       function verifyTicket() {
-    fetch(`${API_BASE_URL}/verify_ticket`, { method: "POST" }).then(() => update());
-}
+        fetch(`${API_BASE_URL}/verify_ticket`, { method: "POST" }).then(() =>
+          update(),
+        );
+      }
 
-function generateFine() {
-    fetch(`${API_BASE_URL}/generate_fine`, { method: "POST" }).then(() => update());
-}
+      function generateFine() {
+        fetch(`${API_BASE_URL}/generate_fine`, { method: "POST" }).then(() =>
+          update(),
+        );
+      }
 
-function resetAll() {
-    if (confirm("End Station & Reset Data?"))
-        fetch(`${API_BASE_URL}/reset_all`, { method: "POST" }).then(() => update());
-}
+      function resetAll() {
+        if (confirm("End Station & Reset Data?"))
+          fetch(`${API_BASE_URL}/reset_all`, { method: "POST" }).then(() =>
+            update(),
+          );
+      }
 
       function downloadReport() {
         const station = document.getElementById("stInput").value || "Unknown";
