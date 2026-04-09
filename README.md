@@ -1,131 +1,91 @@
-# 🚄 RailSense AI: Real-time Coach Monitoring System
+# 🚄 RailSense AI: Real-time Coach Monitoring System (Cloud Edition)
 
-**RailSense AI** is an integrated solution that uses **Computer Vision** and **IoT** to monitor Indian Railways coaches in real time.  
-It helps manage **passenger occupancy tracking, security alerts, and revenue protection** efficiently.
+**RailSense AI** is a professional-grade integrated solution that uses **Computer Vision (YOLOv8)** and **Cloud Computing** to monitor Indian Railways coaches in real time. Deploying a full-stack architecture, it connects an AI Vision edge device (Laptop) to a Cloud Backend (Render), serving real-time data to a Web Dashboard and Mobile App globally.
 
 ---
 
 ## 🚀 Key Features
 
-### 🤖 AI Vision
-- Live passenger counting using **YOLOv8**
-- Detection of **unattended luggage**
+### 🤖 AI Vision & Security
 
-### 🔐 Security
-- **Criminal detection** using template matching
-- **Medical SOS detection** using pose detection
+- **Live Passenger Counting:** Real-time occupancy tracking using **YOLOv8**.
+- **Criminal Detection:** Template matching for identifying blacklisted individuals.
+- **Medical SOS:** Pose detection to identify passengers needing emergency help.
+- **Unattended Luggage:** Automated alerts for suspicious/forgotten bags.
 
-### 💰 Revenue Protection
-- Detect **ticketless passengers** by comparing:
-  - AI passenger count  
-  - Booked ticket data
+### 💰 Revenue & Operations
 
-### 🚪 Operational Alerts
-- **Door blocking detection**
-- **High crowd density alerts**
+- **Ticketless Detection:** Automatic revenue loss calculation by comparing live count vs booked data.
+- **Operational Alerts:** Real-time triggers for **Door Blocking** and **High Crowd Density**.
+- **Pantry Optimizer:** Dynamic calculation of food and water demand based on live coach occupancy.
 
-### 🍱 Pantry Optimizer
-- Calculates **food and water demand** based on real-time occupancy.
+### 🌐 Cloud & Sync
 
-### 📱 Multi-Platform Support
-- **Web Dashboard**
-- **Mobile App (Expo Go)** synchronization
+- **Global Accessibility:** Hosted on **Render**, accessible from any network.
+- **Multi-Platform:** Synchronized **Web Dashboard** and **Mobile App (React Native)**.
 
 ---
 
-# 🛠️ System Architecture & Setup
+## 🛠️ System Architecture
 
-Follow the steps below to set up the project.
-
----
-
-## 1️⃣ Prerequisites
-
-Make sure the following tools are installed:
-
-- **Python 3.10+**
-- **Node.js & npm** (for Expo mobile app)
-- **Expo Go App** (install on your mobile device)
+1. **Edge Layer (Laptop):** Processes YOLOv8 locally for high speed.
+2. **Cloud Layer (Render):** FastAPI backend handles logic and SQLite database.
+3. **Display Layer:** HTML5/JS Dashboard and Expo Go Mobile App fetch data via REST APIs.
 
 ---
 
-## 2️⃣ IP Address Configuration (Important Step) 🚨
+## ⚙️ Installation & Setup
 
-To sync the project across devices on the same network, you need your **Laptop's IPv4 Address**.
+### 1️⃣ Prerequisites
 
-### Steps
+- Python 3.10+
+- `pip install -r requirements.txt`
+- Node.js (for Expo Mobile App)
 
-1. Open terminal and run:
+### 2️⃣ Running the Edge AI (Local)
+
+Ensure you have updated the `API_URL` in `vision.py` to your Render URL.
 
 ```bash
-ipconfig
-
-2. Copy the IPv4 Address
-Example:
-
-10.14.58.199
-
-3. Update the SERVER_IP or API_URL in the following files:
-server.py
-vision.py
-index.html
-tte-app/index.tsx
-
-Replace them with your IPv4 address.
-
-
-# ⚙️ Installation & Running the Project
-
-Step A: Database Setup
-python setup_db.py
-
-Step B: Start Backend Server
-python server.py
-
-Step C: Start AI Vision Monitor
 python vision.py
 
-Step D: Web Dashboard
-Open the following file in your browser: index.html
+### 3️⃣ Accessing the Dashboards (Cloud)
+Since the project is live on Render, you can access it directly:
 
-Step E: Mobile App (Expo Go)
-Start the mobile application: cd tte-app
+Master Dashboard: https://railsense-ai.onrender.com
+
+Pantry Hub: https://railsense-ai.onrender.com/pantry
+
+### 4️⃣ Mobile App Setup
+Go to the tte-app directory.
+
+Update the API_URL in index.tsx.
+
+Start the app:
+
+Bash
 npx expo start
+Scan the QR code with Expo Go on your mobile (Works on Mobile Data too!).
 
-A QR Code will appear in the terminal.
+🧠 Tech Stack
+1. AI/ML: YOLOv8, OpenCV, Ultralytics
 
-Scan it using the Expo Go app on your mobile phone.
+2. Backend: FastAPI (Python), Uvicorn
+
+3. Frontend: HTML5, CSS3, JavaScript (Chart.js)
+
+4. Mobile: React Native (Expo)
+
+5. Deployment: Render (Cloud Hosting), GitHub (CI/CD)
+
+6. Database: SQLite3
 
 
-##### 📡 Important Note
+📌 Use Cases
 
-Your Laptop and Mobile phone must be connected to the same Wi-Fi network or hotspot for the system to work properly.
+1. Safety: Real-time crime and medical emergency monitoring.
 
+2. Revenue: Detecting ticketless travelers without manual checking.
 
-##🧠 Tech Stack
-
-1. Computer Vision: YOLOv8
-
-2. Backend: Python
-
-3. Database: SQLite
-
-4. Frontend: HTML / JavaScript
-
-5. Mobile App: React Native (Expo)
-
-6. Database: SQLite / Python DB setup
-
-##📌 Use Case
-
-RailSense AI can help Indian Railways improve:
-
-1. Passenger safety
-
-2. Ticket fraud detection
-
-3. Operational efficiency
-
-4. Food supply planning
-
-5. Real-time monitoring of train coaches
+3. Efficiency: Optimizing pantry supply to reduce food wastage.
+```
