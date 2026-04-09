@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-import uvicorn, sqlite3, time, random
+from fastapi.responses import FileResponse # Dashboard serve karne ke liye
+import uvicorn, sqlite3, time, random, os # os zaroori hai port ke liye
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -8,6 +9,16 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 verified_tickets = 0
 current_fine_amount = 0
 current_alerts = {"security": "NORMAL", "operational": "NORMAL"}
+
+# --- RENDER SPECIAL: Serve Frontend ---
+@app.get("/")
+async def read_index():
+    return FileResponse('index.html')
+
+@app.get("/pantry")
+async def read_pantry():
+    return FileResponse('pantry.html')
+# ---------------------------------------
 
 def init_db():
     conn = sqlite3.connect('railsense.db')
@@ -32,12 +43,10 @@ async def update_count(count: int):
 async def add_alert(request: Request):
     data = await request.json()
     msg = data.get("type", "Unknown").upper()
-    
     if "CRIMINAL" in msg or "MEDICAL" in msg:
         current_alerts["security"] = msg
     else:
         current_alerts["operational"] = msg
-        
     conn = sqlite3.connect('railsense.db')
     conn.execute("INSERT INTO alerts (message, time) VALUES (?, ?)", (msg, time.time()))
     conn.commit()
@@ -52,7 +61,6 @@ async def get_status():
     row = cursor.fetchone()
     count = row[0] if row else 0
     conn.close()
-    
     ticketless = max(0, count - verified_tickets)
     return {
         "count": count,
@@ -105,4 +113,6 @@ async def station_data(name: str):
     return {"station": name.capitalize(), "expected_count": random.randint(20, 50)}
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    # Render environmental variables se port uthata hai
+    port = int(os.environ.get("PORT", 8080))
+    uvicorn.run(app, host="0.0.0.0", port=port)
