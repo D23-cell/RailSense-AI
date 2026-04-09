@@ -2,9 +2,8 @@ import cv2
 from ultralytics import YOLO
 import requests, time, numpy as np, os
 
-SERVER_IP = "10.14.58.199" 
-API_URL = f"http://{SERVER_IP}:8080"
-
+SERVER_IP = "https://railsense-ai.onrender.com"
+API_URL = "https://railsense-ai.onrender.com"
 model = YOLO('yolov8n.pt') 
 pose_model = YOLO('yolov8n-pose.pt') 
 cap = cv2.VideoCapture(0)

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, StatusBar, TouchableOpacity } from 'react-native';
 
-const SERVER_IP = "10.14.58.199";
+const SERVER_IP = "https://railsense-ai.onrender.com/";
 
 export default function App() {
   const [liveCount, setLiveCount] = useState(0);
@@ -12,7 +12,7 @@ export default function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`http://${SERVER_IP}:8080/get_status`);
+const response = await fetch("https://railsense-ai.onrender.com/get_status"); 
         const data = await response.json();
         
         setLiveCount(data.count || 0);
@@ -50,7 +50,7 @@ export default function App() {
   }, []);
 
   const verifyTicket = () => {
-    fetch(`http://${SERVER_IP}:8080/verify_ticket`, { method: 'POST' });
+fetch("https://railsense-ai.onrender.com/verify_ticket", { method: 'POST' }); 
   };
 
   return (

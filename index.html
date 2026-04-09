@@ -270,11 +270,10 @@
     </div>
 
     <script>
-      const IP = "10.14.58.199";
-
-      function update() {
-        fetch(`http://${IP}:8080/get_status`)
-          .then((r) => r.json())
+const API_BASE_URL = "https://railsense-ai.onrender.com";
+function update() {
+fetch(`${API_BASE_URL}/get_status`)
+  .then((r) => r.json())
           .then((d) => {
             document.getElementById("ticketlessCount").innerText =
               d.ticketless_count;
@@ -314,7 +313,7 @@
       async function checkPrediction() {
         const s = document.getElementById("stInput").value;
         if (!s) return alert("Enter Station Name");
-        const res = await fetch(`http://${IP}:8080/get_station_data?name=${s}`);
+        const res = await fetch("https://railsense-ai.onrender.com");
         const data = await res.json();
         const resDiv = document.getElementById("predResult");
         resDiv.style.display = "block";
@@ -322,21 +321,17 @@
       }
 
       function verifyTicket() {
-        fetch(`http://${IP}:8080/verify_ticket`, { method: "POST" }).then(() =>
-          update(),
-        );
-      }
-      function generateFine() {
-        fetch(`http://${IP}:8080/generate_fine`, { method: "POST" }).then(() =>
-          update(),
-        );
-      }
-      function resetAll() {
-        if (confirm("End Station & Reset Data?"))
-          fetch(`http://${IP}:8080/reset_all`, { method: "POST" }).then(() =>
-            update(),
-          );
-      }
+    fetch(`${API_BASE_URL}/verify_ticket`, { method: "POST" }).then(() => update());
+}
+
+function generateFine() {
+    fetch(`${API_BASE_URL}/generate_fine`, { method: "POST" }).then(() => update());
+}
+
+function resetAll() {
+    if (confirm("End Station & Reset Data?"))
+        fetch(`${API_BASE_URL}/reset_all`, { method: "POST" }).then(() => update());
+}
 
       function downloadReport() {
         const station = document.getElementById("stInput").value || "Unknown";
